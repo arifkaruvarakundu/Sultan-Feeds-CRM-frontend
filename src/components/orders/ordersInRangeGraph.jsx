@@ -32,6 +32,9 @@ const OrdersInRangeGraph = () => {
     }
   }, [startDate, endDate, granularity]);
 
+  const totalOrders = chartData.length;
+  const totalAmount = chartData.reduce((sum, item) => sum + item.total_amount, 0);
+
   const chartOptions = {
     chart: {
       id: 'orders-line-chart',
@@ -173,6 +176,26 @@ const OrdersInRangeGraph = () => {
         </div>
       </div>
       <div className="card__body" style={{ marginTop: '1rem' }}>
+        {chartData.length > 0 && (
+  <div
+    style={{
+      marginTop: '1rem',
+      backgroundColor: '#eef2f6',
+      padding: '1rem',
+      borderRadius: '8px',
+      display: 'flex',
+      gap: '2rem',
+      flexWrap: 'wrap'
+    }}
+  >
+    <div>
+      <strong>Total Orders:</strong> {totalOrders}
+    </div>
+    <div>
+      <strong>Total Amount:</strong> KD {totalAmount.toFixed(3)}
+    </div>
+  </div>
+)}
         <Chart options={chartOptions} series={series} type="line" height={350} />
       </div>
     </div>

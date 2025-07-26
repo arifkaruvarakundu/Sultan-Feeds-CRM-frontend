@@ -10,7 +10,7 @@ import CustomerAnalysis from './pages/CustomerAnalysis'
 import CustomerDetails from './pages/customerDetails'
 import ProductOrderGraph from './components/customers/ProductOrderGraph'
 import OrderAnalysis from './pages/OrderAnalysis'
-
+import ChatAI from './components/chat_ai/chat_ai' 
 
 function App() {
   return (
@@ -27,6 +27,7 @@ function App() {
         <Route path="/customer-details/:id" element={<CustomerDetails />} />
         <Route path="/productOrdergraph" element={<ProductOrderGraph />} />
         <Route path="/orderAnalysis" element={<OrderAnalysis/>} />
+        <Route path="/chat" element={<ChatAI/>} />
         </Route>
       </Routes>
     </Router>
