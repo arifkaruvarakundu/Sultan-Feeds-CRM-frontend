@@ -4,6 +4,7 @@ import Table from '../components/table/Table'; // Adjust path as needed
 import API_BASE_URL from '../../api_config';
 import Chart from 'react-apexcharts';
 import { useNavigate, useParams } from 'react-router-dom';
+import WhatsAppMessaging from '../components/whatsapp_messaging'; // Adjust path as needed
 
 const CustomerDetails = () => {
   const { id } = useParams();
@@ -161,6 +162,16 @@ const customer = data.customer_details[0];
           />
         </div>
       </div>
+
+      <div className="card" style={{ marginTop: '2rem' }}>
+        <div className="card__header">
+          <h3>WhatsApp Messaging</h3>
+        </div>
+        <div className="card__body">
+          <WhatsAppMessaging />
+        </div>
+      </div>
+
     </div>
   );
 };
