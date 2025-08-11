@@ -1,116 +1,66 @@
-// import React, { useEffect, useState, useRef } from "react";
-
-// const WhatsAppMessaging = () => {
-//   const [messages, setMessages] = useState([]);
-//   const [input, setInput] = useState("");
-//   const wsRef = useRef(null);
-//   const toNumber = "919745674674"; // ✅ Replace with real number
-
-//   // 📡 Setup WebSocket connection
-//   useEffect(() => {
-//     const ws = new WebSocket("ws://localhost:8000/ws");
-//     wsRef.current = ws;
-
-//     ws.onopen = () => console.log("🟢 WebSocket connected");
-//     ws.onclose = () => console.log("🔴 WebSocket disconnected");
-//     ws.onerror = (e) => console.error("WebSocket error:", e);
-
-//     ws.onmessage = (event) => {
-//       const messageData = JSON.parse(event.data);
-//       console.log("📥 Incoming:", messageData);
-//       setMessages((prev) => [...prev, { text: messageData.body, from: "them" }]);
-//     };
-
-//     return () => ws.close();
-//   }, []);
-
-//   // 📤 Send message
-//   const sendMessage = async () => {
-//     if (!input.trim()) return;
-
-//     const msg = input;
-//     setMessages((prev) => [...prev, { text: msg, from: "me" }]);
-//     setInput("");
-
-//     try {
-//       const response = await fetch("http://localhost:8000/send-message", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           to_number: toNumber,
-//           message: msg,
-//         }),
-//       });
-
-//       const data = await response.json();
-//       console.log("✅ Sent:", data);
-//     } catch (err) {
-//       console.error("❌ Error sending message:", err);
-//     }
-//   };
-
-//   // ⏎ Send on Enter
-//   const handleKeyPress = (e) => {
-//     if (e.key === "Enter") sendMessage();
-//   };
-
-//   return (
-//     <div className="flex flex-col max-w-md mx-auto mt-10 border rounded shadow-lg h-[600px]">
-//       <div className="bg-green-600 text-white px-4 py-3 rounded-t">
-//         <h2 className="text-lg font-semibold">📨 WhatsApp Chat</h2>
-//       </div>
-
-//       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2 bg-gray-50">
-//         {messages.map((msg, idx) => (
-//           <div
-//             key={idx}
-//             className={`max-w-[75%] px-4 py-2 rounded-lg text-sm ${
-//               msg.from === "me"
-//                 ? "ml-auto bg-green-500 text-white"
-//                 : "mr-auto bg-gray-200 text-gray-900"
-//             }`}
-//           >
-//             {msg.text}
-//           </div>
-//         ))}
-//       </div>
-
-//       <div className="flex p-2 border-t bg-white">
-//         <input
-//           type="text"
-//           className="flex-1 border rounded px-3 py-2 text-sm focus:outline-none"
-//           placeholder="Type a message"
-//           value={input}
-//           onChange={(e) => setInput(e.target.value)}
-//           onKeyDown={handleKeyPress}
-//         />
-//         <button
-//           onClick={sendMessage}
-//           className="ml-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-//         >
-//           Send
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default WhatsAppMessaging;
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { Check, CheckCheck } from "lucide-react"; // optional, or replace with inline SVGs
+import API_BASE_URL from "../../api_config";
 
-const WhatsAppMessaging = () => {
+const WhatsAppMessaging = ({ phone }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const wsRef = useRef(null);
-  const toNumber = "919745674674";
 
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+  chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+}, [messages]);
+
+  // function formatKuwaitNumber(raw) {
+  //   if (!raw) return "";
+
+  //   // Remove all non-digit characters
+  //   const digits = raw.replace(/\D/g, "");
+
+  //   // Remove leading zeros
+  //   const normalized = digits.replace(/^0+/, "");
+
+  //   // If it starts with '965' already, return it
+  //   if (normalized.startsWith("965") && normalized.length === 11) {
+  //     return normalized;
+  //   }
+
+  //   // If it's 8 digits, assume it's local and prepend 965
+  //   if (normalized.length === 8) {
+  //     return "965" + normalized;
+  //   }
+
+  //   // If it's something else (e.g. 00965...), take last 8 digits and prepend 965
+  //   if (normalized.length > 8) {
+  //     return "965" + normalized.slice(-8);
+  //   }
+
+  //   // fallback
+  //   return normalized;
+  // }
+
+  // const toNumber = formatKuwaitNumber(phone);
+  const toNumber = phone
+  console.log("📞 Sending to:", toNumber);
   // 🧠 Track message IDs to update status
   const messageIdMap = useRef({}); // local map of sent messages
 
   useEffect(() => {
+      const loadHistory = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/whatsapp-messages?phone=${toNumber}`);
+        const data = await res.json();
+        console.log("📜 Loaded history:", data);
+        setMessages(data);
+      } catch (error) {
+        console.error("❌ Error fetching history:", error);
+      }
+    };
+
+    loadHistory();
+
     const ws = new WebSocket("ws://localhost:8000/ws");
     wsRef.current = ws;
 
@@ -185,7 +135,7 @@ const WhatsAppMessaging = () => {
     setInput("");
 
     try {
-      const res = await fetch("http://localhost:8000/send-message", {
+      const res = await fetch(`${API_BASE_URL}/send-message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ to_number: toNumber, message: msgToSend }),
@@ -271,6 +221,7 @@ const WhatsAppMessaging = () => {
           Send
         </button>
       </div>
+      <div ref={chatEndRef} />
     </div>
   );
 };

@@ -13,8 +13,6 @@ const AttributionPieChart = () => {
         const res = await axios.get(`${API_BASE_URL}/attribution-summary`);
         const data = res.data;
 
-        console.log("response data of rrer chart:", data)
-
         const labelList = data.map(item => item.mapped_referrer);
         const seriesList = data.map(item => item.count);
 

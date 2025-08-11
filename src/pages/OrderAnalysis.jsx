@@ -3,7 +3,7 @@ import OrdersInRangeGraph from '../components/orders/ordersInRangeGraph';
 // import TopSellingProductsChartInbetween from '../components/products/topSellingProductsInbetween';
 import AttributionPieChart from '../components/orders/AttributionPieChart'
 import OrderTable from '../components/orders/ordersTable'
-// import LocationBasedOrders from '../components/orders/LocationBasedOrders';
+import LocationBasedOrders from '../components/orders/LocationBasedOrders';
 
 const OrderAnalysis = () => {
   return (
@@ -12,8 +12,8 @@ const OrderAnalysis = () => {
       <OrdersInRangeGraph />
       {/* <TopSellingProductsChartInbetween /> */}
       <AttributionPieChart />
-      {/* <LocationBasedOrders /> */}
       <OrderTable/>
+      <LocationBasedOrders />
     </div>
   );
 };

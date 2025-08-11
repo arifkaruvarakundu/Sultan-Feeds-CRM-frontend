@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import Table from '../table/Table'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import Table from '../table/Table';
 import API_BASE_URL from '../../../api_config';
 import { useNavigate } from 'react-router-dom';
-
 
 const ProductSalesTable = () => {
   const [products, setProducts] = useState([])
   const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 30)))
   const [endDate, setEndDate] = useState(new Date())
+  const [grandTotal, setGrandTotal] = useState(0);
 
   const navigate = useNavigate()
 
@@ -22,7 +22,11 @@ const ProductSalesTable = () => {
           end_date: endDate.toISOString()
         }
       })
+     
       setProducts(res.data)
+      // ✅ Calculate grand total here
+      const total = res.data.reduce((sum, item) => sum + (item.price * item.total_sales), 0);
+      setGrandTotal(total);
     } catch (err) {
       console.error('Error fetching product sales:', err)
     }
@@ -32,7 +36,7 @@ const ProductSalesTable = () => {
     fetchSales()
   }, [startDate, endDate])
 
-  const headData = ['ID', 'Name', 'Category', 'Total Sales']
+  const headData = ['ID', 'Name', 'Category','Price', 'Total quantity', 'Total Amount']
 
   const renderHead = (item, index) => <th key={index}>{item}</th>
 
@@ -48,7 +52,9 @@ const ProductSalesTable = () => {
       <td>{item.id}</td>
       <td>{item.name}</td>
       <td>{item.category}</td>
+      <td>{item.price}</td>
       <td>{item.total_sales}</td>
+      <td>{(item.price * item.total_sales).toFixed(2)}</td> 
     </tr>
   )
 
@@ -75,10 +81,16 @@ const ProductSalesTable = () => {
         </div>
       </div>
 
-      <div className="col-12">
+                <div className="col-12">
                     <div className="card">
                         <div className="card__header">
                             <h3>Sales per product</h3>
+                        </div>
+                        <div className="flex justify-between items-center mb-4">
+                          <h2 className="text-xl font-bold">Product Sales (By Date Range)</h2>
+                          <div className="text-lg font-semibold">
+                            Grand Total: KD : {grandTotal.toFixed(2)}
+                          </div>
                         </div>
                         <div className="card__body">
                             <Table
@@ -94,8 +106,6 @@ const ProductSalesTable = () => {
                         </div>
                     </div>
                 </div>
-
-      
     </div>
   )
 }

@@ -32,7 +32,8 @@ const OrdersInRangeGraph = () => {
     }
   }, [startDate, endDate, granularity]);
 
-  const totalOrders = chartData.length;
+  // const totalOrders = chartData.length;
+  const totalOrders = chartData.reduce((sum, item) => sum + (item.order_count || 0), 0);
   const totalAmount = chartData.reduce((sum, item) => sum + item.total_amount, 0);
 
   const chartOptions = {
@@ -109,8 +110,8 @@ const OrdersInRangeGraph = () => {
           <DatePicker
             selected={startDate}
             onChange={(date) => {
-              const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-              const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+              const firstDay = new Date(date.getFullYear(), date.getMonth(), 1, 12);
+              const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 12);
               setStartDate(firstDay);
               setEndDate(lastDay);
             }}

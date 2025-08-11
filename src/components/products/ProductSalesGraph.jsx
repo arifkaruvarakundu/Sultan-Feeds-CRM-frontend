@@ -3,6 +3,7 @@ import { useParams, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import Chart from 'react-apexcharts'
 import API_BASE_URL from '../../../api_config'
+import ForecastTable from './product_predictions'
 
 const ProductSalesGraph = () => {
   const { id } = useParams()
@@ -14,6 +15,8 @@ const ProductSalesGraph = () => {
     series: []
   })
 
+  const [externalId, setExternalId] = useState(null)
+
   useEffect(() => {
     const fetchSalesData = async () => {
       try {
@@ -24,7 +27,7 @@ const ProductSalesGraph = () => {
             product_id: id
           }
         })
-
+        
         const dates = res.data.map(item => item.date)
         const sales = res.data.map(item => item.total_sales)
 
@@ -37,6 +40,7 @@ const ProductSalesGraph = () => {
             }
           ]
         })
+        setExternalId(res.data[0].external_id)
       } catch (err) {
         console.error('Error fetching product sales data:', err)
       }
@@ -84,6 +88,8 @@ const ProductSalesGraph = () => {
         type="line"
         height={400}
       />
+      {/* 🔥 Render forecast only if externalId is available */}
+      {externalId && <ForecastTable productId={externalId} productName={productName} />}
     </div>
   )
 }

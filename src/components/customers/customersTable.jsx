@@ -5,12 +5,12 @@ import Table from '../table/Table'; // Update path based on your actual file str
 import API_BASE_URL from '../../../api_config';
 import { useNavigate } from 'react-router-dom';
 
-const CustomersTable = () => {
+const CustomersTable = ({customers}) => {
     const [topCustomers, setTopCustomers] = useState([]);
 
     const navigate = useNavigate();
 
-    const topCustomerHead = ["User", "Total Orders", "Total Spending"];
+    const topCustomerHead = ["User", "Total Orders", "Total Spending", "Phone"];
 
     const renderCustomerHead = (item, index) => <th key={index}>{item}</th>;
 
@@ -23,21 +23,22 @@ const CustomersTable = () => {
             <td>{item.user}</td>
             <td>{item.total_orders}</td>
             <td>{item.total_spending}</td>
+            <td>{item.phone}</td>
         </tr>
     );
 
-    useEffect(() => {
-        const fetchCustomers = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/customers-table`);
-                setTopCustomers(response.data);
-            } catch (error) {
-                console.error('Error fetching customer data:', error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchCustomers = async () => {
+    //         try {
+    //             const response = await axios.get(`${API_BASE_URL}/customers-table`);
+    //             setTopCustomers(response.data);
+    //         } catch (error) {
+    //             console.error('Error fetching customer data:', error);
+    //         }
+    //     };
 
-        fetchCustomers();
-    }, []);
+    //     fetchCustomers();
+    // }, []);
 
     return (
         <div className="col-12">
@@ -50,7 +51,7 @@ const CustomersTable = () => {
                         limit="10"
                         headData={topCustomerHead}
                         renderHead={renderCustomerHead}
-                        bodyData={topCustomers}
+                        bodyData={customers}
                         renderBody={renderCustomerBody}
                     />
                 </div>

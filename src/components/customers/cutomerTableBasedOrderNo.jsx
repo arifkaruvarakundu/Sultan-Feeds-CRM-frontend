@@ -30,7 +30,6 @@ const CustomerClassificationTables = () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/full-customer-classification`);
         const data = res.data;
-        console.log("data classification:", data)
 
         const grouped = data.reduce((acc, item) => {
           const key = item.classification || "Unclassified";

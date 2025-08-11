@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import Table from '../table/Table' // Adjust path if needed
+import API_BASE_URL from '../../../api_config'
 
 
 function OrdersTable() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [totalOrders, setTotalOrders] = useState(0)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/orders-by-location")
+    fetch(`${API_BASE_URL}/orders-by-city`)
       .then(res => {
         if (!res.ok) {
           throw new Error("Network response was not ok")
@@ -19,6 +21,11 @@ function OrdersTable() {
         // Sort orders descending by 'orders'
         const sorted = data.sort((a, b) => b.orders - a.orders)
         setOrders(sorted)
+
+        // ✅ Calculate total orders count
+        const total = sorted.reduce((sum, item) => sum + item.order_count, 0)
+        setTotalOrders(total)
+
         setLoading(false)
       })
       .catch(err => {
@@ -34,7 +41,7 @@ function OrdersTable() {
     <tr key={index}>
       <td>{item.city}</td>
       {/* <td>{item.coordinates.join(', ')}</td> */}
-      <td>{item.orders}</td>
+      <td>{item.order_count}</td>
     </tr>
   )
 
@@ -43,6 +50,12 @@ function OrdersTable() {
 
   return (
     <div className="col-12">
+      {/* <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Orders by City</h2>
+        <div className="text-lg font-semibold">
+          Total Orders: {totalOrders}
+        </div>
+      </div> */}
       <div className="card">
         <div className="card__header">
           <h3>Orders based on Location Table</h3>
