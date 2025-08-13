@@ -1,7 +1,7 @@
 import React from 'react';
 import TopSellingProductsChart from '../components/products/topSellingProducts';
 import TopSellingProductsChartInbetween from '../components/products/topSellingProductsInbetween';
-import ProductSalesTable from '../components/products/ProductSalesTable'
+import ProductSalesTable from '../components/products/productSalesTable'
 import ProductTable from '../components/products/productsTable'
 const ProductAnalysis = () => {
   return (
