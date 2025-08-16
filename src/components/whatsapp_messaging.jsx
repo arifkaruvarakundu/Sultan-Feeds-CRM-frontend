@@ -61,7 +61,8 @@ const WhatsAppMessaging = ({ phone }) => {
 
     loadHistory();
 
-    const ws = new WebSocket("ws://localhost:8000/ws");
+    // const ws = new WebSocket("ws://localhost:8000/ws");
+    const ws = new WebSocket(`${API_BASE_URL.replace(/^http/, "ws")}/ws`);
     wsRef.current = ws;
 
     ws.onopen = () => console.log("🟢 WebSocket connected");
