@@ -11,23 +11,28 @@ import CustomerDetails from './pages/customerDetails'
 import ProductOrderGraph from './components/customers/ProductOrderGraph'
 import OrderAnalysis from './pages/OrderAnalysis'
 import ChatAI from './components/chat_ai/chat_ai' 
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
   return (
     <Router>
       <Routes>
+         {/* Public routes */}
         <Route path="/" element={<SignIn />} />
-        <Route path="/register" element={<RegisterAdmin />} />
-        <Route path="/" element={<Layout />}>
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="/ProductAnalysis" element={<ProductAnalysis/>}/>
-        {/* <Route path="/product/:id" element={<ProductDetails />} /> */}
-        <Route path="/product-sales/:id" element={<ProductSalesGraph />} />
-        <Route path="/CustomerAnalysis" element={<CustomerAnalysis />} />
-        <Route path="/customer-details/:id" element={<CustomerDetails />} />
-        <Route path="/productOrdergraph" element={<ProductOrderGraph />} />
-        <Route path="/orderAnalysis" element={<OrderAnalysis/>} />
-        <Route path="/chat" element={<ChatAI/>} />
+        {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Layout />}>
+            <Route path="/register" element={<RegisterAdmin />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="/ProductAnalysis" element={<ProductAnalysis/>}/>
+            {/* <Route path="/product/:id" element={<ProductDetails />} /> */}
+            <Route path="/product-sales/:id" element={<ProductSalesGraph />} />
+            <Route path="/CustomerAnalysis" element={<CustomerAnalysis />} />
+            <Route path="/customer-details/:id" element={<CustomerDetails />} />
+            <Route path="/productOrdergraph" element={<ProductOrderGraph />} />
+            <Route path="/orderAnalysis" element={<OrderAnalysis/>} />
+            <Route path="/chat" element={<ChatAI/>} />
+          </Route>
         </Route>
       </Routes>
     </Router>

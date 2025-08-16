@@ -28,8 +28,12 @@
         "display_name": "Chat with CRM",
         "route": "/chat",
         "icon":"bx bxs-user-rectangle"
+    },
+    {
+        "display_name": "LogOut",
+        "route": "/",
+        "icon": "bx bx-log-out"
     }
-    
 ]
 
 
