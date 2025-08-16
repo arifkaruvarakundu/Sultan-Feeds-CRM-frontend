@@ -50,7 +50,7 @@ const WhatsAppMessaging = ({ phone }) => {
   useEffect(() => {
       const loadHistory = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/whatsapp-messages?phone=${toNumber}`);
+        const res = await fetch(`${API_BASE_URL}/whatsapp-messages?phone=${encodeURIComponent(toNumber)}`);
         const data = await res.json();
         console.log("📜 Loaded history:", data);
         setMessages(data);
