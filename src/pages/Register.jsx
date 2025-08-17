@@ -82,7 +82,7 @@ const RegisterAdmin = () => {
             name="first_name"
             value={form.first_name}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            className="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           />
         </div>
@@ -94,7 +94,7 @@ const RegisterAdmin = () => {
             name="last_name"
             value={form.last_name}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            className="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           />
         </div>
@@ -106,7 +106,7 @@ const RegisterAdmin = () => {
             name="email"
             value={form.email}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            className="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           />
         </div>
@@ -118,7 +118,7 @@ const RegisterAdmin = () => {
             name="password"
             value={form.password}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            className="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           />
         </div>
@@ -130,7 +130,7 @@ const RegisterAdmin = () => {
             name="confirmPassword"
             value={form.confirmPassword}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+            className="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           />
         </div>

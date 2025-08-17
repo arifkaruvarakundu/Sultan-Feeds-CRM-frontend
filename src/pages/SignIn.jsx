@@ -60,7 +60,7 @@ const SignIn = () => {
           <label className="block text-sm mb-1 dark:text-white">Email</label>
           <input
             type="email"
-            className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-white"
+             className="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -71,7 +71,7 @@ const SignIn = () => {
           <label className="block text-sm mb-1 dark:text-white">Password</label>
           <input
             type="password"
-            className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:text-white"
+             className="w-full px-3 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
