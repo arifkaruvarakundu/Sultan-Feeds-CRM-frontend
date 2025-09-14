@@ -3,21 +3,45 @@ import { useNavigate } from "react-router-dom";
 import Table from "../table/Table";
 import axios from "axios";
 import API_BASE_URL from "../../../api_config";
+import { useTranslation } from "react-i18next";
 
-const tableHead = [
-  "Customer ID",
-  "Customer Name",
-  "Phone",
-  "Order Count",
-  "Total Spent",
-  "Last Order Date",
-  "Classification",
-  "Spending Classification",
-  "Churn Risk",
+const LowChurnCustomers = () => {
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const { t } = useTranslation("customerAnalysis");
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/customers_with_low_churnRisk`);
+        setCustomers(res.data);
+      } catch (err) {
+        setError("Failed to fetch customers");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
+
+  const tableHead = [
+  "customerId",
+  "customerName",
+  "phone",
+  "orderCount",
+  "totalSpent",
+  "lastOrderDate",
+  "classification",
+  "spendingClassification",
+  "churnRisk",
 //   "Segment",
 ];
 
-const renderHead = (item, index) => <th key={index}>{item}</th>;
+const renderHead = (item, index) => <th key={index}>{t(item)}</th>;
 
 const renderBody = (item, index, navigate) => (
   <tr
@@ -38,31 +62,10 @@ const renderBody = (item, index, navigate) => (
   </tr>
 );
 
-const LowChurnCustomers = () => {
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const res = await axios.get(`${API_BASE_URL}/customers_with_low_churnRisk`);
-        setCustomers(res.data);
-      } catch (err) {
-        setError("Failed to fetch customers");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCustomers();
-  }, []);
-
-  if (loading) return <p className="text-gray-500">Loading customers...</p>;
+  if (loading) return <p className="text-gray-500">{t("loading")}</p>;
   if (error) return <p className="text-red-500">{error}</p>;
   if (customers.length === 0)
-    return <p className="text-gray-500">No low churn risk customers available.</p>;
+    return <p className="text-gray-500">{t("empty")}</p>;
 
   return (
     <div className="row">
@@ -70,10 +73,10 @@ const LowChurnCustomers = () => {
         <div className="card">
           <div className="bg-gradient-to-r from-blue-100 to-blue-200 border border-blue-300 rounded-xl px-4 py-3 mb-4 shadow-sm text-center">
             <h3 className="text-xl font-semibold text-blue-800 tracking-wide">
-              Low Churn Risk Customers <span className="text-sm text-blue-700">({customers.length})</span>
+              {t("title")} <span className="text-sm text-blue-700">({customers.length})</span>
             </h3>
             <p className="text-sm text-blue-700 mt-1 italic">
-              Customers with low risk of churn (recent orders)
+              {t("subtitle")}
             </p>
           </div>
           <div className="card__body">

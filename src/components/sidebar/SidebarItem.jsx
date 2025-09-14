@@ -1,7 +1,9 @@
-import React from 'react'
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const SidebarItem = props => {
 
+    const { t } = useTranslation("side_bar");
     const active = props.active ? 'active' : ''
 
     return (
@@ -9,7 +11,7 @@ const SidebarItem = props => {
             <div className={`sidebar__item-inner ${active}`}>
                 <i className={props.icon}></i>
                 <span>
-                    {props.title}
+                    {t(props.title)}
                 </span>
             </div>
         </div>

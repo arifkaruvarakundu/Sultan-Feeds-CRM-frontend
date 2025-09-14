@@ -4,8 +4,12 @@ import Table from '../table/Table'
 import API_BASE_URL from '../../../api_config'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { useTranslation } from 'react-i18next';
 
 const OrderTable = () => {
+
+  const { t } = useTranslation("ordersAnalysis");
+  
   const [orders, setOrders] = useState([])
   const [filteredOrders, setFilteredOrders] = useState([])
   const [startDate, setStartDate] = useState(null)
@@ -79,9 +83,9 @@ const OrderTable = () => {
     filterByDateRange()
   }, [startDate, endDate, orders])
 
-  const headData = ['Order ID', 'Customer', 'Date', 'Amount', 'Status', 'attribution_referrer']
+  const headData = ['orderId', 'customer', 'date', 'amount', 'status', 'attributionReferrer']
 
-  const renderHead = (item, index) => <th key={index}>{item}</th>
+  const renderHead = (item, index) => <th key={index}>{t(item)}</th>
 
   const renderBody = (item, index) => (
     <tr key={index}>
@@ -108,27 +112,27 @@ const OrderTable = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">All Orders</h2>
+      <h2 className="text-xl font-bold mb-4">{t("pageTitle")}</h2>
 
       <div className="mb-4 flex flex-wrap gap-4 items-center">
         <div>
-          <label className="block text-sm font-medium mb-1">Start Date</label>
+          <label className="block text-sm font-medium mb-1">{t("startDate")}</label>
           <DatePicker
             selected={startDate}
             onChange={(date) => setStartDate(date)}
             className="border px-3 py-2 rounded"
             dateFormat="dd MMM yyyy"
-            placeholderText="Select start date"
+            placeholderText={t("startDatePlaceholder")}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">End Date</label>
+          <label className="block text-sm font-medium mb-1">{t("endDate")}</label>
           <DatePicker
             selected={endDate}
             onChange={(date) => setEndDate(date)}
             className="border px-3 py-2 rounded"
             dateFormat="dd MMM yyyy"
-            placeholderText="Select end date"
+            placeholderText={t("endDatePlaceholder")}
           />
         </div>
       </div>
@@ -136,10 +140,10 @@ const OrderTable = () => {
       <div className="col-12">
         <div className="card">
           <div className="card__header">
-            <h3>Orders Table</h3>
+            <h3>{t("tableTitle")}</h3>
             <p className="text-sm text-gray-600 mt-2">
-                Showing <span className="font-semibold">{filteredOrders.length}</span> order
-                {filteredOrders.length !== 1 ? 's' : ''} in selected date range
+                {t("showing")} <span className="font-semibold">{filteredOrders.length}</span> {t("order")}
+                {filteredOrders.length !== 1 ? 's' : ''} {t("inSelectedDateRange")}
             </p>
           </div>
           <div className="card__body">

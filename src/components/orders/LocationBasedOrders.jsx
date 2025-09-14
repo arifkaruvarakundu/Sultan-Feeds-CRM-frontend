@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Table from '../table/Table' // Adjust path if needed
 import API_BASE_URL from '../../../api_config'
-
+import { useTranslation } from 'react-i18next';
 
 function OrdersTable() {
+  const { t } = useTranslation("ordersAnalysis");
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [totalOrders, setTotalOrders] = useState(0)
@@ -34,8 +35,8 @@ function OrdersTable() {
       })
   }, [])
 
-  const headData = ["City", "Orders"]
-  const renderHead = (item, index) => <th key={index}>{item}</th>
+  const headData = ["city", "orders"]
+  const renderHead = (item, index) => <th key={index}>{t(item)}</th>
 
   const renderBody = (item, index) => (
     <tr key={index}>
@@ -45,8 +46,8 @@ function OrdersTable() {
     </tr>
   )
 
-  if (loading) return <div className="p-4">Loading orders...</div>
-  if (error) return <div className="p-4 text-red-500">Error: {error}</div>
+  if (loading) return <div className="p-4">{t("loading")}</div>
+  if (error) return <div className="p-4 text-red-500">{t("error")}: {error}</div>
 
   return (
     <div className="col-12">
@@ -58,7 +59,7 @@ function OrdersTable() {
       </div> */}
       <div className="card">
         <div className="card__header">
-          <h3>Orders based on Location Table</h3>
+          <h3>{t("title_location")}</h3>
           {/* <p className="text-sm text-gray-600 mt-2">
             Showing <span className="font-semibold">{orders.length}</span> order
             {orders.length !== 1 ? 's' : ''} in selected date range

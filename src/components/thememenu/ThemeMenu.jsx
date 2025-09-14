@@ -1,58 +1,13 @@
 import React, {useRef, useState, useEffect} from 'react'
-
 import './thememenu.css'
-
 import { useDispatch } from 'react-redux'
-
 import ThemeAction from '../../redux/actions/ThemeAction'
+import { useTranslation } from "react-i18next";
 
-const mode_settings = [
-    {
-        id: 'light',
-        name: 'Light',
-        background: 'light-background',
-        class: 'theme-mode-light'
-    },
-    {
-        id: 'dark',
-        name: 'Dark',
-        background: 'dark-background',
-        class: 'theme-mode-dark'
-    }
-]
-
-const color_settings = [
-    {
-        id: 'blue',
-        name: 'Blue',
-        background: 'blue-color',
-        class: 'theme-color-blue'
-    },
-    {
-        id: 'red',
-        name: 'Red',
-        background: 'red-color',
-        class: 'theme-color-red'
-    },
-    {
-        id: 'cyan',
-        name: 'Cyan',
-        background: 'cyan-color',
-        class: 'theme-color-cyan'
-    },
-    {
-        id: 'green',
-        name: 'Green',
-        background: 'green-color',
-        class: 'theme-color-green'
-    },
-    {
-        id: 'orange',
-        name: 'Orange',
-        background: 'orange-color',
-        class: 'theme-color-orange'
-    },
-]
+const language_settings = [
+    { id: 'en', name: 'English' },
+    { id: 'ar', name: 'العربية' }
+];
 
 const clickOutsideRef = (content_ref, toggle_ref) => {
     document.addEventListener('mousedown', (e) => {
@@ -106,7 +61,68 @@ const ThemeMenu = () => {
 
         if (colorClass !== undefined) setcurrColor(colorClass.id)
 
+        const savedLang = localStorage.getItem("appLanguage") || "en";
+            setCurrLang(savedLang);
+            i18n.changeLanguage(savedLang);
+
     }, []);
+
+    const { t,i18n } = useTranslation("landing");
+        const [currLang, setCurrLang] = useState(i18n.language || "en");
+
+        const setLanguage = (lang) => {
+            setCurrLang(lang.id);
+            i18n.changeLanguage(lang.id);
+            localStorage.setItem("appLanguage", lang.id);
+        };
+
+        const mode_settings = [
+            {
+                id: 'light',
+                name: t("light"),
+                background: 'light-background',
+                class: 'theme-mode-light'
+            },
+            {
+                id: 'dark',
+                name: t("dark"),
+                background: 'dark-background',
+                class: 'theme-mode-dark'
+            }
+        ]
+
+        const color_settings = [
+            {
+                id: 'blue',
+                name: t("blue"),
+                background: 'blue-color',
+                class: 'theme-color-blue'
+            },
+            {
+                id: 'red',
+                name: t("red"),
+                background: 'red-color',
+                class: 'theme-color-red'
+            },
+            {
+                id: 'cyan',
+                name: t("cyan"),
+                background: 'cyan-color',
+                class: 'theme-color-cyan'
+            },
+            {
+                id: 'green',
+                name: t("green"),
+                background: 'green-color',
+                class: 'theme-color-green'
+            },
+            {
+                id: 'orange',
+                name: t("orange"),
+                background: 'orange-color',
+                class: 'theme-color-orange'
+            },
+        ]
 
     return (
         <div>
@@ -114,12 +130,12 @@ const ThemeMenu = () => {
                 <i className='bx bx-palette'></i>
             </button>
             <div ref={menu_ref} className="theme-menu">
-                <h4>Theme settings</h4>
+                <h4>{t("themeSettings")}</h4>
                 <button className="theme-menu__close" onClick={() => closeMenu()}>
                     <i className='bx bx-x'></i>
                 </button>
                 <div className="theme-menu__select">
-                    <span>Choose mode</span>
+                    <span>{t("chooseMode")}</span>
                     <ul className="mode-list">
                         {
                             mode_settings.map((item, index) => (
@@ -134,7 +150,7 @@ const ThemeMenu = () => {
                     </ul>
                 </div>
                 <div className="theme-menu__select">
-                    <span>Choose color</span>
+                    <span>{t("chooseColor")}</span>
                     <ul className="mode-list">
                         {
                             color_settings.map((item, index) => (
@@ -148,6 +164,20 @@ const ThemeMenu = () => {
                         }
                     </ul>
                 </div>
+                <div className="theme-menu__select">
+                    <span>{t("chooseLanguage")}</span>
+                    <ul className="mode-list">
+                        {language_settings.map((item, index) => (
+                            <li key={index} onClick={() => setLanguage(item)}>
+                                <div className={`mode-list__color ${item.id === currLang ? 'active' : ''}`}>
+                                    <i className="bx bx-check"></i>
+                                </div>
+                                <span>{item.name}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
             </div>
         </div>
     )

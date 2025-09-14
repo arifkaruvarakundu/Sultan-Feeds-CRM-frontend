@@ -4,8 +4,12 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import API_BASE_URL from '../../../api_config';
+import { useTranslation } from 'react-i18next';
 
 const OrdersInRangeGraph = () => {
+
+  const { t } = useTranslation("ordersAnalysis");
+
   const [granularity, setGranularity] = useState('daily');
   const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 7)));
   const [endDate, setEndDate] = useState(new Date());
@@ -45,12 +49,12 @@ const OrdersInRangeGraph = () => {
     xaxis: {
       categories: chartData.map(item => item.date),
       title: {
-        text: 'Date'
+        text: t("date")
       }
     },
     yaxis: {
       title: {
-        text: 'Total Amount (KD)'
+        text: t("amountYAxis")
       },
       labels: {
         formatter: val => val.toFixed(3)
@@ -82,7 +86,7 @@ const OrdersInRangeGraph = () => {
       return (
         <>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label style={{ fontWeight: 500, marginBottom: '4px' }}>Start Date</label>
+            <label style={{ fontWeight: 500, marginBottom: '4px' }}>{t("startDate")}</label>
             <DatePicker
               selected={startDate}
               onChange={(date) => setStartDate(date)}
@@ -91,7 +95,7 @@ const OrdersInRangeGraph = () => {
             />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label style={{ fontWeight: 500, marginBottom: '4px' }}>End Date</label>
+            <label style={{ fontWeight: 500, marginBottom: '4px' }}>{t("endDate")}</label>
             <DatePicker
               selected={endDate}
               onChange={(date) => setEndDate(date)}
@@ -106,7 +110,7 @@ const OrdersInRangeGraph = () => {
     if (granularity === 'monthly') {
       return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label style={{ fontWeight: 500, marginBottom: '4px' }}>Month</label>
+          <label style={{ fontWeight: 500, marginBottom: '4px' }}>{t("month")}</label>
           <DatePicker
             selected={startDate}
             onChange={(date) => {
@@ -126,7 +130,7 @@ const OrdersInRangeGraph = () => {
     if (granularity === 'yearly') {
       return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label style={{ fontWeight: 500, marginBottom: '4px' }}>Year</label>
+          <label style={{ fontWeight: 500, marginBottom: '4px' }}>{t("year")}</label>
           <DatePicker
             selected={startDate}
             onChange={(date) => {
@@ -162,15 +166,15 @@ const OrdersInRangeGraph = () => {
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label style={{ fontWeight: 500, marginBottom: '4px' }}>Analysis Type</label>
+            <label style={{ fontWeight: 500, marginBottom: '4px' }}>{t("analysisType")}</label>
             <select
               value={granularity}
               onChange={(e) => setGranularity(e.target.value)}
               style={{ padding: '0.5rem', borderRadius: '4px' }}
             >
-              <option value="daily">Daily Analysis</option>
-              <option value="monthly">Monthly Analysis</option>
-              <option value="yearly">Yearly Analysis</option>
+              <option value="daily">{t("dailyAnalysis")}</option>
+              <option value="monthly">{t("monthlyAnalysis")}</option>
+              <option value="yearly">{t("yearlyAnalysis")}</option>
             </select>
           </div>
           {renderDatePickers()}
@@ -190,10 +194,10 @@ const OrdersInRangeGraph = () => {
     }}
   >
     <div>
-      <strong>Total Orders:</strong> {totalOrders}
+      <strong>{t("totalOrders")}:</strong> {totalOrders}
     </div>
     <div>
-      <strong>Total Amount:</strong> KD {totalAmount.toFixed(3)}
+      <strong>{t("totalAmount")}:</strong> KD {totalAmount.toFixed(3)}
     </div>
   </div>
 )}

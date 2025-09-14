@@ -3,33 +3,37 @@ import { useNavigate } from "react-router-dom";
 import Table from "../table/Table";
 import axios from "axios";
 import API_BASE_URL from "../../../api_config";
-
-const tableHead = ["Customer Name", "Total Orders", "Churn Risk"];
-
-const renderHead = (item, index) => <th key={index}>{item}</th>;
-
-const renderBody = (item, index, navigate) => (
-  <tr
-    key={index}
-    onClick={() => navigate(`/customer-details/${item.customer_id}`)}
-    style={{ cursor: "pointer" }}
-  >
-    <td>{item.customer_name}</td>
-    <td>{item.order_count}</td>
-    <td>{item.churn_risk}</td>
-    {/* <td>{item.segment}</td> */}
-  </tr>
-);
+import { useTranslation } from "react-i18next";
 
 const CustomerClassificationTables = () => {
   const [groupedCustomers, setGroupedCustomers] = useState({});
   const navigate = useNavigate();
+  const { t } = useTranslation("customerAnalysis");
+
+  const tableHead = ["customer_name", "total_orders", "churn_risk"];
+
+  const renderHead = (item, index) => <th key={index}>{t(item)}</th>;
+
+  const renderBody = (item, index, navigate) => (
+    <tr
+      key={index}
+      onClick={() => navigate(`/customer-details/${item.customer_id}`)}
+      style={{ cursor: "pointer" }}
+    >
+      <td>{item.customer_name}</td>
+      <td>{item.order_count}</td>
+      <td>{item.churn_risk}</td>
+      {/* <td>{item.segment}</td> */}
+    </tr>
+  );
 
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/full-customer-classification`);
         const data = res.data;
+
+        console.log("Fetched classified customers:", data);
 
         const grouped = data.reduce((acc, item) => {
           const key = item.classification || "Unclassified";
@@ -62,13 +66,13 @@ const CustomerClassificationTables = () => {
   }, []);
 
   const classificationOrder = [
-  { key: "Loyal", label: "Loyal Customers", criteria: "Orders > 16" },
-  { key: "Frequent", label: "Frequent Customers", criteria: "6 - 15 Orders" },
-  { key: "Occasional", label: "Occasional Customers", criteria: "2 - 5 Orders" },
-  { key: "New", label: "New Customers", criteria: "1 Order in 2025 or later" },
-  { key: "Dead", label: "Dead Customers", criteria: "1 Order before 2025" },
-  { key: "No Orders", label: "No Orders", criteria: "0 Orders" },
-];
+    { key: "Loyal", label: t("customer_classification.Loyal.label"), criteria: t("customer_classification.Loyal.criteria") },
+    { key: "Frequent", label: t("customer_classification.Frequent.label"), criteria: t("customer_classification.Frequent.criteria") },
+    { key: "Occasional", label: t("customer_classification.Occasional.label"), criteria: t("customer_classification.Occasional.criteria") },
+    { key: "New", label: t("customer_classification.New.label"), criteria: t("customer_classification.New.criteria") },
+    { key: "Dead", label: t("customer_classification.Dead.label"), criteria: t("customer_classification.Dead.criteria") },
+    { key: "No Orders", label: t("customer_classification.NoOrders.label"), criteria: t("customer_classification.NoOrders.criteria") },
+  ];
 
   return (
     <div className="row">
@@ -77,11 +81,11 @@ const CustomerClassificationTables = () => {
       <div className="col-6" key={key}>
         <div className="card">
           <div className="bg-gradient-to-r from-indigo-100 to-indigo-200 border border-indigo-300 rounded-xl px-4 py-3 mb-4 shadow-sm text-center">
-  <h3 className="text-xl font-semibold text-indigo-800 tracking-wide">
-    {label} <span className="text-sm text-indigo-600">({groupedCustomers[key].length})</span>
-  </h3>
-  <p className="text-sm text-indigo-700 mt-1 italic">{criteria}</p>
-</div>
+            <h3 className="text-xl font-semibold text-indigo-800 tracking-wide">
+              {label} <span className="text-sm text-indigo-600">({groupedCustomers[key].length})</span>
+            </h3>
+            <p className="text-sm text-indigo-700 mt-1 italic">{criteria}</p>
+          </div>
           <div className="card__body">
             <Table
               limit="10"

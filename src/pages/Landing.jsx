@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import StatusCard from '../components/status-card/StatusCard';
 import Table from '../components/table/Table';
 import Badge from '../components/badge/Badge';
+import { useTranslation} from 'react-i18next';
 // import ChatAI from '../components/chat_ai/chat_ai';
 // import statusCards from '../assets/JsonData/status-card-data.json';
 
@@ -41,9 +42,9 @@ const chartOptions = {
     }
 }
 
-const topCustomerHead = ["User", "Total Orders", "Total Spending"];
+// const topCustomerHead = ["user", "totalOrders", "totalSpending"];
 
-const renderCustomerHead = (item, index) => <th key={index}>{item}</th>;
+// const renderCustomerHead = (item, index) => <th key={index}>{t(item)}</th>;
 
 const renderCustomerBody = (item, index) => (
     <tr key={index}>
@@ -53,13 +54,13 @@ const renderCustomerBody = (item, index) => (
     </tr>
 );
 
-const renderCusomerBody = (item, index) => (
-    <tr key={index}>
-        <td>{item.username}</td>
-        <td>{item.order}</td>
-        <td>{item.price}</td>
-    </tr>
-)
+// const renderCusomerBody = (item, index) => (
+//     <tr key={index}>
+//         <td>{item.username}</td>
+//         <td>{item.order}</td>
+//         <td>{item.price}</td>
+//     </tr>
+// )
 
 const orderStatus = {
     "cancelled": "danger",
@@ -68,10 +69,6 @@ const orderStatus = {
     "failed": "danger",
     "processing": "primary",
 }
-
-const renderOrderHead = (item, index) => (
-    <th key={index}>{item}</th>
-)
 
 const renderOrderBody = (item, index) => (
     <tr key={index}>
@@ -91,6 +88,17 @@ const Dashboard = () => {
     const [statusCards, setStatusCards] = useState([])
     const [topCustomers, setTopCustomers] = useState([])
     const [salesComparison, setSalesComparison] = useState(null)
+
+    const { t, i18n } = useTranslation("landing");
+
+    const topCustomerHead = ["user", "totalOrders", "totalSpending"];
+    const renderCustomerHead = (item, index) => <th key={index}>{t(item)}</th>;
+
+    // useEffect(() => {
+    //     // set html dir & lang for accessibility & layout
+    //     document.documentElement.lang = i18n.language;
+    //     document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    // }, [i18n.language]);
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/latest-orders`)
@@ -125,22 +133,22 @@ const Dashboard = () => {
             // Add icons manually based on title or order
             const cards = [
                 {
-                    title:titlesales,
-                    count:totalamount,
+                    title: t("totalSales"),
+                    count: totalamount,
                     icon: "bx bx-shopping-bag"
                 },
                 {
-                    title: titleaov,
+                    title: t("averageOrderValue"),
                     count: amount,
                     icon: "bx bx-cart"
                 },
                 {
-                    title: titlecustomers,
+                    title: t("totalCustomers"),
                     count: countcustomers,
                     icon: "bx bx-dollar-circle"
                 },
                 {
-                    title,
+                    title: t("totalOrders"),
                     count,
                     icon: "bx bx-receipt"
                 }
@@ -153,7 +161,7 @@ const Dashboard = () => {
     };
 
     fetchStatusCards();
-}, []);
+}, [i18n.language]);
 
     useEffect(() => {
         axios.get(`${API_BASE_URL}/sales-comparison`)
@@ -185,11 +193,11 @@ const Dashboard = () => {
     return {
         series: [
             {
-                name: 'Previous Month',
+                name: t("previousMonth"),
                 data: prevSeries
             },
             {
-                name: 'This Month',
+                name: t("thisMonth"),
                 data: currSeries
             }
         ],
@@ -206,12 +214,12 @@ const Dashboard = () => {
             xaxis: {
                 categories: labels,
                 title: {
-                    text: 'Day of Month'
+                    text: t("dayOfMonth")
                 }
             },
             yaxis: {
                 title: {
-                    text: 'Sales (KD)'
+                    text: t("salesKD")
                 },
                 labels: {
                     formatter: val => Number(val).toFixed(3)
@@ -236,13 +244,13 @@ const Dashboard = () => {
     };
 };
 
-    const orderHeaders = ["order id", "user", "total price", "date", "status"]
-
+    const orderHeaders = ["orderId", "user", "totalPrice", "date", "status"];
+    const renderOrderHead = (item, index) => <th key={index}>{t(item)}</th>;
     const themeReducer = useSelector(state => state.ThemeReducer.mode)
 
     return (
         <div>
-            <h2 className="page-header">Dashboard</h2>
+            <h2 className="page-header">{t("dashboard")}</h2>
             {/* <ChatAI /> */}
             <div className="row">
                 <div className="col-6">
@@ -271,7 +279,7 @@ const Dashboard = () => {
                                     height='100%'
                                 />
                             ) : (
-                                <p>Loading chart...</p>
+                                <p>{t("loadingChart")}</p>
                             )
                         }
                     </div>
@@ -280,7 +288,7 @@ const Dashboard = () => {
                 <div className="col-4">
                     <div className="card">
                         <div className="card__header">
-                            <h3>top customers</h3>
+                            <h3>{t("topCustomers")}</h3>
                         </div>
                         <div className="card__body">
                             <Table
@@ -291,14 +299,14 @@ const Dashboard = () => {
                             />
                         </div>
                         <div className="card__footer">
-                            <Link to='/CustomerAnalysis'>view all</Link>
+                            <Link to='/CustomerAnalysis'>{t("viewAll")}</Link>
                         </div>
                     </div>
                 </div>
                 <div className="col-8">
                     <div className="card">
                         <div className="card__header">
-                            <h3>latest orders</h3>
+                            <h3>{t("latestOrders")}</h3>
                         </div>
                         <div className="card__body">
                             <Table
@@ -309,7 +317,7 @@ const Dashboard = () => {
                             />
                         </div>
                         <div className="card__footer">
-                            <Link to='/orderAnalysis'>view all</Link>
+                            <Link to='/orderAnalysis'>{t("viewAll")}</Link>
                         </div>
                     </div>
                 </div>

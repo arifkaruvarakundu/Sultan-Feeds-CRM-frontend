@@ -6,6 +6,7 @@ import Chart from 'react-apexcharts';
 import { useNavigate, useParams } from 'react-router-dom';
 import WhatsAppMessaging from '../components/whatsapp_messaging';
 import CustomerForecast from '../components/customers/CustomerProductSuggesion';
+import { useTranslation } from 'react-i18next';
 
 const CustomerDetails = () => {
   const { id } = useParams();
@@ -17,6 +18,8 @@ const CustomerDetails = () => {
   });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+
 
   useEffect(() => {
     async function fetchData() {

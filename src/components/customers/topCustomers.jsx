@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import axios from "axios";
 import API_BASE_URL from "../../../api_config";
+import { useTranslation } from "react-i18next";
 
 const TopCustomersChart = () => {
   const [series, setSeries] = useState([]);
   const [categories, setCategories] = useState([]);
+  const { t } = useTranslation("customerAnalysis");
 
   useEffect(() => {
     axios.get(`${API_BASE_URL}/top-customers`).then((res) => {
@@ -30,7 +32,7 @@ const TopCustomersChart = () => {
       categories: categories,
     },
     title: {
-      text: "Top 5 Customers by Spending",
+      text: t("top_5_customers_by_spending"),
       align: "center",
     },
     tooltip: {

@@ -3,12 +3,19 @@ import { useNavigate } from "react-router-dom";
 import Table from "../table/Table";
 import axios from "axios";
 import API_BASE_URL from "../../../api_config";
+import { useTranslation } from "react-i18next";
 
-const tableHead = ["Customer Name", "Total Orders", "Total Spent", "Churn_risk"];
+const CustomerSpendingClassificationTables = () => {
+  const [groupedCustomers, setGroupedCustomers] = useState({});
 
-const renderHead = (item, index) => <th key={index}>{item}</th>;
+  const { t } = useTranslation("customerAnalysis");
+  const navigate = useNavigate();
 
-const renderBody = (item, index, navigate) => (
+  const tableHead = ["customer_name", "total_orders", "total_spending", "churn_risk"];
+
+  const renderHead = (item, index) => <th key={index}>{t(item)}</th>;
+
+  const renderBody = (item, index, navigate) => (
   <tr
     key={index}
     onClick={() => navigate(`/customer-details/${item.customer_id}`)}
@@ -20,11 +27,7 @@ const renderBody = (item, index, navigate) => (
     <td>{item.churn_risk}</td>
 
   </tr>
-);
-
-const CustomerSpendingClassificationTables = () => {
-  const [groupedCustomers, setGroupedCustomers] = useState({});
-  const navigate = useNavigate();
+  );
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -55,10 +58,10 @@ const CustomerSpendingClassificationTables = () => {
   }, []);
 
   const classificationOrder = [
-    { key: "VIP", label: "VIP Customers", criteria: "Total Spent ≥ 1000" },
-    { key: "High Spender", label: "High Spenders", criteria: "200 ≤ Total Spent < 1000" },
-    { key: "Medium Spender", label: "Medium Spenders", criteria: "50 ≤ Total Spent < 200" },
-    { key: "Low Spender", label: "Low Spenders", criteria: "Total Spent < 50" },
+    { key: "VIP", label: t("customer_spending_classification.VIP.label"), criteria: t("customer_spending_classification.VIP.criteria") },
+    { key: "High Spender", label: t("customer_spending_classification.HighSpender.label"), criteria: t("customer_spending_classification.HighSpender.criteria") },
+    { key: "Medium Spender", label: t("customer_spending_classification.MediumSpender.label"), criteria: t("customer_spending_classification.MediumSpender.criteria") },
+    { key: "Low Spender", label: t("customer_spending_classification.LowSpender.label"), criteria: t("customer_spending_classification.LowSpender.criteria") }
   ];
 
   return (

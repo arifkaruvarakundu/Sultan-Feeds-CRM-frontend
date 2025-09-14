@@ -4,6 +4,7 @@ import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import API_BASE_URL from '../../../api_config';
+import { useTranslation } from 'react-i18next';
 
 
 const TopSellingProductsChartInbetween = () => {
@@ -11,6 +12,8 @@ const TopSellingProductsChartInbetween = () => {
   const [categories, setCategories] = useState([]);
   const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 30)));
   const [endDate, setEndDate] = useState(new Date());
+
+  const { t } = useTranslation("productAnalysis");
 
   const fetchData = async () => {
     try {
@@ -38,15 +41,15 @@ const TopSellingProductsChartInbetween = () => {
   const options = {
     chart: { type: "bar" },
     xaxis: { categories },
-    title: { text: "Top 5 Selling Products", align: "center" },
+    title: { text: t("top5SellingProducts"), align: "center" },
   };
 
   return (
     <div className="p-4">
       <div className="flex items-center gap-4 mb-4">
-        <label className="text-sm font-medium">From:</label>
+        <label className="text-sm font-medium">{t("from")}:</label>
         <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
-        <label className="text-sm font-medium">To:</label>
+        <label className="text-sm font-medium">{t("to")}:</label>
         <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
       </div>
       <Chart options={options} series={series} type="bar" height={350} />

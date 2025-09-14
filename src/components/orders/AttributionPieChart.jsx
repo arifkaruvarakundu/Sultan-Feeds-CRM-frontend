@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import axios from "axios";
 import API_BASE_URL from "../../../api_config";
+import { useTranslation } from "react-i18next";
 
 const AttributionPieChart = () => {
+
+  const { t } = useTranslation("ordersAnalysis");
+
   const [series, setSeries] = useState([]);
   const [labels, setLabels] = useState([]);
 
@@ -52,11 +56,11 @@ const AttributionPieChart = () => {
     return (
     <div className="flex justify-center w-full">
       <div className="w-full max-w-2xl p-4 bg-white rounded-xl shadow-md text-center">
-        <h2 className="text-xl font-semibold mb-4">Referrer Attribution</h2>
+        <h2 className="text-xl font-semibold mb-4">{t("referrerAttribution")}</h2>
         {series.length > 0 ? (
           <Chart options={options} series={series} type="pie" width="100%" />
         ) : (
-          <p>Loading chart...</p>
+          <p>{t("loadingChart")}</p>
         )}
       </div>
     </div>

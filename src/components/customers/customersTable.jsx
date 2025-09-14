@@ -4,15 +4,17 @@ import axios from 'axios';
 import Table from '../table/Table'; // Update path based on your actual file structure
 import API_BASE_URL from '../../../api_config';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CustomersTable = ({customers}) => {
     const [topCustomers, setTopCustomers] = useState([]);
 
     const navigate = useNavigate();
+    const { t } = useTranslation("customerAnalysis");
 
-    const topCustomerHead = ["User", "Total Orders", "Total Spending", "Phone"];
+    const topCustomerHead = ["user", "total_orders", "total_spending", "phone"];
 
-    const renderCustomerHead = (item, index) => <th key={index}>{item}</th>;
+    const renderCustomerHead = (item, index) => <th key={index}>{t(item)}</th>;
 
     const renderCustomerBody = (item, index) => (
         <tr 
@@ -44,7 +46,7 @@ const CustomersTable = ({customers}) => {
         <div className="col-12">
             <div className="card">
                 <div className="card__header">
-                    <h3>Customers</h3>
+                    <h3>{t("customers")}</h3>
                 </div>
                 <div className="card__body">
                     <Table

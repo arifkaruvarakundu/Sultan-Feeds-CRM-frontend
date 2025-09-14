@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import axios from "axios";
 import API_BASE_URL from '../../../api_config';
+import { useTranslation } from 'react-i18next';
 
 const TopSellingProductsChart = () => {
   const [series, setSeries] = useState([]);
   const [categories, setCategories] = useState([]);
+
+  const { t } = useTranslation("productAnalysis");
 
   useEffect(() => {
     axios.get(`${API_BASE_URL}/top-selling-products`).then((res) => {
@@ -30,7 +33,7 @@ const TopSellingProductsChart = () => {
       categories: categories,
     },
     title: {
-      text: "Top 5 Selling Products",
+      text: t("top5SellingProducts"),
       align: "center",
     },
   };

@@ -2,8 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../../api_config";
+import { useTranslation } from "react-i18next";
 
 const RegisterAdmin = () => {
+
+  const { t } = useTranslation("ordersAnalysis");
+
   const navigate = useNavigate();
   const [form, setForm] = useState({
     first_name: "",
@@ -70,13 +74,13 @@ const RegisterAdmin = () => {
         className="bg-white shadow-lg rounded px-8 pt-6 pb-8 w-full max-w-md"
       >
         <h2 className="text-2xl font-bold mb-6 text-center text-black">
-          Admin Register
+          {t("registerAdmin")}
         </h2>
 
         {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
 
         <div className="mb-4">
-          <label className="block text-gray-700 mb-1">First Name</label>
+          <label className="block text-gray-700 mb-1">{t("firstNameLabel")}</label>
           <input
             type="text"
             name="first_name"
@@ -88,7 +92,7 @@ const RegisterAdmin = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 mb-1">Last Name</label>
+          <label className="block text-gray-700 mb-1">{t("lastNameLabel")}</label>
           <input
             type="text"
             name="last_name"
@@ -100,7 +104,7 @@ const RegisterAdmin = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 mb-1">Email</label>
+          <label className="block text-gray-700 mb-1">{t("emailLabel")}</label>
           <input
             type="email"
             name="email"
@@ -112,7 +116,7 @@ const RegisterAdmin = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 mb-1">Password</label>
+          <label className="block text-gray-700 mb-1">{t("passwordLabel")}</label>
           <input
             type="password"
             name="password"
@@ -124,7 +128,7 @@ const RegisterAdmin = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 mb-1">Confirm Password</label>
+          <label className="block text-gray-700 mb-1">{t("confirmPasswordLabel")}</label>
           <input
             type="password"
             name="confirmPassword"
@@ -139,7 +143,7 @@ const RegisterAdmin = () => {
           type="submit"
           className="w-full bg-black text-white py-2 rounded hover:bg-gray-900 hover:shadow-md"
         >
-          Register Admin
+          {t("registerButton")}
         </button>
       </form>
     </div>

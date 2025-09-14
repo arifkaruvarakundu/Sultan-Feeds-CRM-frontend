@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Table from '../table/Table'
 import API_BASE_URL from '../../../api_config'
+import { useTranslation } from 'react-i18next';
 
 const ProductTable = () => {
   const [products, setProducts] = useState([])
+  const { t } = useTranslation("productAnalysis");
 
   const fetchProducts = async () => {
     try {
@@ -20,20 +22,20 @@ const ProductTable = () => {
   }, [])
 
   const headData = [
-    'ID',
-    'Name',
-    'Short Description',
-    'Regular Price',
-    'Sales Price',
-    'Total Sales',
-    'Category',
-    'Stock Status',
-    'Weight',
-    'Date Created',
-    'Date Modified'
+    'id',
+    'name',
+    'short_description',
+    'regular_price',
+    'sales_price',
+    'total_sales',
+    'category',
+    'stock_status',
+    'weight',
+    'date_created',
+    'date_modified'
   ]
 
-  const renderHead = (item, index) => <th key={index}>{item}</th>
+  const renderHead = (item, index) => <th key={index}>{t(item)}</th>
 
   const renderBody = (item, index) => (
     <tr key={index}>
@@ -53,12 +55,12 @@ const ProductTable = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">All Products</h2>
+      <h2 className="text-xl font-bold mb-4">{t('all_products')}</h2>
 
       <div className="col-12">
         <div className="card">
           <div className="card__header">
-            <h3>Product Table</h3>
+            <h3>{t('product_table')}</h3>
           </div>
           <div className="card__body">
             <Table
