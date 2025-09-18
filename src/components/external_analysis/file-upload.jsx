@@ -4,13 +4,19 @@ import CardContent from "../ui/cardContent"
 import  CardHeader from "../ui/cardHeader"
 import  CardTitle from "../ui/cardTitle"
 import  Button  from "../ui/Button"
-import { Upload, FileSpreadsheet, X, CheckCircle } from "lucide-react"
+import { Upload, FileSpreadsheet, X, CheckCircle, Brain, Loader2 } from "lucide-react"
 import { cn } from "../../lib/utils"
+import axios from "axios"
+import API_BASE_URL from "../../../api_config"
 
 export default function FileUpload() {
     
   const [files, setFiles] = useState([])
   const [isDragOver, setIsDragOver] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [analysisLoading, setAnalysisLoading] = useState(false)
+  const [analysisResult, setAnalysisResult] = useState(null)
+  const [analysisError, setAnalysisError] = useState("")
 
   const handleDragOver = useCallback((e) => {
 
@@ -43,6 +49,10 @@ export default function FileUpload() {
   }, [])
 
   const processFiles = (fileList) => {
+    // For now, only handle single file for AI analysis
+    if (fileList.length > 0) {
+      setSelectedFile(fileList[0])
+    }
 
     const newFiles = fileList.map((file) => ({
       name: file.name,
@@ -50,6 +60,7 @@ export default function FileUpload() {
       type: file.type,
       status: "uploading",
       progress: 0,
+      file: file, // Store actual file object
     }))
 
     setFiles((prev) => [...prev, ...newFiles])
@@ -105,6 +116,38 @@ export default function FileUpload() {
     const sizes = ["Bytes", "KB", "MB", "GB"]
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
+  const handleAIAnalysis = async () => {
+    if (!selectedFile) return
+
+    try {
+      setAnalysisLoading(true)
+      setAnalysisError("")
+      setAnalysisResult(null)
+
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+
+      const response = await axios.post(`${API_BASE_URL}/analyze/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      console.log("analysis response:", response.data)
+
+      setAnalysisResult(response.data)
+    } catch (error) {
+      setAnalysisError(error.response?.data?.error || "Analysis failed. Please try again.")
+    } finally {
+      setAnalysisLoading(false)
+    }
+  }
+
+  const clearAnalysis = () => {
+    setAnalysisResult(null)
+    setAnalysisError("")
   }
 
   return (
@@ -197,6 +240,152 @@ export default function FileUpload() {
                 </div>
               </div>
             ))}
+
+            {/* AI Analysis Section */}
+            {selectedFile && (
+              <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200/60">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg">
+                      <Brain className="h-5 w-5 text-white" />
+                    </div>
+                    <h4 className="font-semibold text-slate-800">AI Analysis</h4>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {analysisResult && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearAnalysis}
+                        className="text-slate-600 hover:text-red-500"
+                      >
+                        Clear Results
+                      </Button>
+                    )}
+                    <Button
+                      onClick={handleAIAnalysis}
+                      disabled={analysisLoading}
+                      className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      {analysisLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Analyzing...
+                        </>
+                      ) : (
+                        <>
+                          <Brain className="h-4 w-4 mr-2" />
+                          Analyze with AI
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                {analysisError && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    {analysisError}
+                  </div>
+                )}
+
+                {analysisResult && (
+                  <div className="space-y-4">
+                    {/* Analysis Summary */}
+                    {analysisResult.analysis && (
+                      <div className="p-4 bg-white rounded-lg border border-slate-200">
+                        <h5 className="font-semibold text-slate-800 mb-2">Analysis Summary</h5>
+                        <p className="text-slate-700 text-sm leading-relaxed">{analysisResult.analysis}</p>
+                      </div>
+                    )}
+
+                    {/* Recommendations */}
+                    {analysisResult.recommendations && analysisResult.recommendations.length > 0 && (
+                      <div className="p-4 bg-white rounded-lg border border-slate-200">
+                        <h5 className="font-semibold text-slate-800 mb-3">Recommendations</h5>
+                        <ul className="space-y-2">
+                          {analysisResult.recommendations.map((rec, index) => (
+                            <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+                              <span className="text-purple-500 mt-1">•</span>
+                              <span>{rec}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Suggested Tables */}
+                    {analysisResult.suggested_tables && analysisResult.suggested_tables.length > 0 && (
+                      <div className="p-4 bg-white rounded-lg border border-slate-200">
+                        <h5 className="font-semibold text-slate-800 mb-3">Suggested Tables</h5>
+                        <div className="space-y-3">
+                          {analysisResult.suggested_tables.map((table, index) => (
+                            <div key={index} className="border border-slate-200 rounded-lg overflow-hidden">
+                              <div className="bg-slate-50 px-3 py-2 border-b border-slate-200">
+                                <h6 className="font-medium text-slate-800">{table.title}</h6>
+                              </div>
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                  <thead className="bg-slate-50">
+                                    <tr>
+                                      {table.data[0]?.map((header, i) => (
+                                        <th key={i} className="px-3 py-2 text-left font-medium text-slate-700">
+                                          {header}
+                                        </th>
+                                      ))}
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {table.data.slice(1).map((row, i) => (
+                                      <tr key={i} className="border-t border-slate-200">
+                                        {row.map((cell, j) => (
+                                          <td key={j} className="px-3 py-2 text-slate-600">
+                                            {cell}
+                                          </td>
+                                        ))}
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Suggested Charts */}
+                    {analysisResult.suggested_charts && analysisResult.suggested_charts.length > 0 && (
+                      <div className="p-4 bg-white rounded-lg border border-slate-200">
+                        <h5 className="font-semibold text-slate-800 mb-3">Suggested Charts</h5>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {analysisResult.suggested_charts.map((chart, index) => (
+                            <div key={index} className="border border-slate-200 rounded-lg overflow-hidden">
+                              <div className="bg-slate-50 px-3 py-2 border-b border-slate-200">
+                                <h6 className="font-medium text-slate-800">{chart.title}</h6>
+                                <p className="text-xs text-slate-600">Type: {chart.type}</p>
+                              </div>
+                              <div className="p-3">
+                                {chart.image_base64 ? (
+                                  <img
+                                    src={`data:image/png;base64,${chart.image_base64}`}
+                                    alt={chart.title}
+                                    className="w-full h-auto rounded"
+                                  />
+                                ) : (
+                                  <div className="text-center py-4 text-slate-500 text-sm">
+                                    Chart preview not available
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </CardContent>
