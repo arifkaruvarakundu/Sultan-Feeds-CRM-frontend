@@ -49,6 +49,14 @@ const MessagingClassificationTable = ({
     });
   };
 
+  const selectCurrentPage = () => {
+  setSelected((prev) => {
+    const copy = new Set(prev);
+    current.forEach((c) => copy.add(c.customer_id));
+    return copy;
+  });
+  };
+
   return (
     <div className="mt-12">
       {/* Heading */}
@@ -75,25 +83,32 @@ const MessagingClassificationTable = ({
       />
 
       {/* Select / Unselect */}
-      <div className="mb-4 space-x-2">
+      <div className="mb-4 flex flex-nowrap items-center gap-2 text-sm">
         <button
-          onClick={selectAllInGroup}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={selectAllInGroup}
+            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
         >
-          Select All
+            Select All
         </button>
         <button
-          onClick={unselectAllInGroup}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={unselectAllInGroup}
+            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
         >
-          Unselect All
+            Unselect All
+        </button>
+        <button
+            onClick={selectCurrentPage}
+            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+        >
+            Select Current Page
         </button>
         {customers.filter((c) => selected.has(c.customer_id)).length > 0 && (
-          <span className="ml-4 text-gray-700">
+            <span className="ml-2 text-gray-700 text-sm">
             {customers.filter((c) => selected.has(c.customer_id)).length} selected
-          </span>
+            </span>
         )}
-      </div>
+        </div>
+
 
       {/* Table */}
       <div className="overflow-x-auto rounded-lg shadow">
