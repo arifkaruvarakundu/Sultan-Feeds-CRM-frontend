@@ -51,21 +51,30 @@ const MessagingClassificationTable = ({
 
   return (
     <div className="mt-12">
+      {/* Heading */}
       <div className="bg-gradient-to-r from-indigo-100 to-indigo-200 border border-indigo-300 rounded-xl px-4 py-3 mb-4 shadow-sm text-center">
         <h3 className="text-xl font-semibold text-indigo-800 tracking-wide">
-          {title} <span className="text-sm text-indigo-600">({customers.length})</span>
+          {title}{" "}
+          <span className="text-sm text-indigo-600">
+            ({customers.length})
+          </span>
         </h3>
         <p className="text-sm text-indigo-700 mt-1 italic">{criteria}</p>
       </div>
 
+      {/* Search */}
       <input
         type="text"
         placeholder="Search by name or phone..."
         value={filter}
-        onChange={(e) => setFilter(e.target.value)}
+        onChange={(e) => {
+          setFilter(e.target.value);
+          setCurrentPage(1); // reset pagination when filter changes
+        }}
         className="mb-4 p-2 border rounded w-full shadow-sm focus:ring-2 focus:ring-blue-400"
       />
 
+      {/* Select / Unselect */}
       <div className="mb-4 space-x-2">
         <button
           onClick={selectAllInGroup}
@@ -86,6 +95,7 @@ const MessagingClassificationTable = ({
         )}
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto rounded-lg shadow">
         <table className="w-full border-collapse">
           <thead className="bg-gray-100 text-gray-700">
@@ -127,6 +137,27 @@ const MessagingClassificationTable = ({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-between items-center mt-4 text-gray-700">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
+        >
+          Previous
+        </button>
+        <span className="text-sm">
+          Page {currentPage} of {totalPages || 1}
+        </span>
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages || totalPages === 0}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
+        >
+          Next
+        </button>
       </div>
     </div>
   );
