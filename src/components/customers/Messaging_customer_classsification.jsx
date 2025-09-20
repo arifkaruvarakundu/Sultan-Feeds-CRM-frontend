@@ -2,9 +2,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import API_BASE_URL from "../../../api_config";
 
-const MessagingClassificationTable = ({ title, criteria, customers }) => {
+const MessagingClassificationTable = ({
+  title,
+  criteria,
+  customers,
+  selected,
+  setSelected
+}) => {
   const [filter, setFilter] = useState("");
-  const [selected, setSelected] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
@@ -20,32 +25,39 @@ const MessagingClassificationTable = ({ title, criteria, customers }) => {
   const startIndex = (currentPage - 1) * rowsPerPage;
   const current = filtered.slice(startIndex, startIndex + rowsPerPage);
 
-  // Selection
-  const toggleSelect = (id) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+  const toggleCustomer = (id) => {
+    setSelected((prev) => {
+      const copy = new Set(prev);
+      copy.has(id) ? copy.delete(id) : copy.add(id);
+      return copy;
+    });
   };
 
-  const selectAll = () => {
-    const allIds = filtered.map((c) => c.customer_id);
-    setSelected(allIds);
+  const selectAllInGroup = () => {
+    setSelected((prev) => {
+      const copy = new Set(prev);
+      customers.forEach((c) => copy.add(c.customer_id));
+      return copy;
+    });
   };
 
-  const unselectAll = () => setSelected([]);
+  const unselectAllInGroup = () => {
+    setSelected((prev) => {
+      const copy = new Set(prev);
+      customers.forEach((c) => copy.delete(c.customer_id));
+      return copy;
+    });
+  };
 
   return (
     <div className="mt-12">
-      {/* Heading */}
       <div className="bg-gradient-to-r from-indigo-100 to-indigo-200 border border-indigo-300 rounded-xl px-4 py-3 mb-4 shadow-sm text-center">
         <h3 className="text-xl font-semibold text-indigo-800 tracking-wide">
-          {title}{" "}
-          <span className="text-sm text-indigo-600">({customers.length})</span>
+          {title} <span className="text-sm text-indigo-600">({customers.length})</span>
         </h3>
         <p className="text-sm text-indigo-700 mt-1 italic">{criteria}</p>
       </div>
 
-      {/* Search Bar */}
       <input
         type="text"
         placeholder="Search by name or phone..."
@@ -54,26 +66,26 @@ const MessagingClassificationTable = ({ title, criteria, customers }) => {
         className="mb-4 p-2 border rounded w-full shadow-sm focus:ring-2 focus:ring-blue-400"
       />
 
-      {/* Select / Unselect */}
       <div className="mb-4 space-x-2">
         <button
-          onClick={selectAll}
+          onClick={selectAllInGroup}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Select All
         </button>
         <button
-          onClick={unselectAll}
+          onClick={unselectAllInGroup}
           className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
         >
           Unselect All
         </button>
-        {selected.length > 0 && (
-          <span className="ml-4 text-gray-700">{selected.length} selected</span>
+        {customers.filter((c) => selected.has(c.customer_id)).length > 0 && (
+          <span className="ml-4 text-gray-700">
+            {customers.filter((c) => selected.has(c.customer_id)).length} selected
+          </span>
         )}
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto rounded-lg shadow">
         <table className="w-full border-collapse">
           <thead className="bg-gray-100 text-gray-700">
@@ -90,14 +102,14 @@ const MessagingClassificationTable = ({ title, criteria, customers }) => {
               <tr
                 key={c.customer_id}
                 className={`hover:bg-gray-50 ${
-                  selected.includes(c.customer_id) ? "bg-blue-50" : ""
+                  selected.has(c.customer_id) ? "bg-blue-50" : ""
                 }`}
               >
                 <td className="p-2 border text-center">
                   <input
                     type="checkbox"
-                    checked={selected.includes(c.customer_id)}
-                    onChange={() => toggleSelect(c.customer_id)}
+                    checked={selected.has(c.customer_id)}
+                    onChange={() => toggleCustomer(c.customer_id)}
                   />
                 </td>
                 <td className="p-2 border">{c.customer_name}</td>
@@ -116,32 +128,11 @@ const MessagingClassificationTable = ({ title, criteria, customers }) => {
           </tbody>
         </table>
       </div>
-
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-4 text-gray-700">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
-        >
-          Previous
-        </button>
-        <span className="text-sm">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
-        >
-          Next
-        </button>
-      </div>
     </div>
   );
 };
 
-const MessagingCustomerClassificationTables = () => {
+const MessagingCustomerClassificationTables = ({ selected, setSelected }) => {
   const [grouped, setGrouped] = useState({});
 
   useEffect(() => {
@@ -163,36 +154,12 @@ const MessagingCustomerClassificationTables = () => {
   }, []);
 
   const classificationOrder = [
-    {
-      key: "Loyal",
-      title: "Loyal Customers",
-      criteria: "High order frequency, low churn risk",
-    },
-    {
-      key: "Frequent",
-      title: "Frequent Customers",
-      criteria: "Regular buyers with moderate activity",
-    },
-    {
-      key: "Occasional",
-      title: "Occasional Customers",
-      criteria: "Buy sometimes, not consistent",
-    },
-    {
-      key: "New",
-      title: "New Customers",
-      criteria: "Recently joined, early stage",
-    },
-    {
-      key: "Dead",
-      title: "Dead Customers",
-      criteria: "No recent orders, high churn risk",
-    },
-    {
-      key: "No Orders",
-      title: "No Orders Customers",
-      criteria: "Signed up but never ordered",
-    },
+    { key: "Loyal", title: "Loyal Customers", criteria: "High order frequency, low churn risk" },
+    { key: "Frequent", title: "Frequent Customers", criteria: "Regular buyers with moderate activity" },
+    { key: "Occasional", title: "Occasional Customers", criteria: "Buy sometimes, not consistent" },
+    { key: "New", title: "New Customers", criteria: "Recently joined, early stage" },
+    { key: "Dead", title: "Dead Customers", criteria: "No recent orders, high churn risk" },
+    { key: "No Orders", title: "No Orders Customers", criteria: "Signed up but never ordered" },
   ];
 
   return (
@@ -204,6 +171,8 @@ const MessagingCustomerClassificationTables = () => {
             title={title}
             criteria={criteria}
             customers={grouped[key]}
+            selected={selected}
+            setSelected={setSelected}
           />
         ) : null
       )}

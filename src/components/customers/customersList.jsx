@@ -5,7 +5,7 @@ import MessagingCustomerClassificationTables from "../customers/Messaging_custom
 
 const CustomerList = ({ onSelectCustomers }) => {
   const [customers, setCustomers] = useState([]);
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(new Set()); // ✅ shared state
   const [filter, setFilter] = useState("");
 
   // Pagination
@@ -13,41 +13,45 @@ const CustomerList = ({ onSelectCustomers }) => {
   const rowsPerPage = 20;
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/customers-table`)
-      .then(res => setCustomers(res.data))
-      .catch(err => console.error(err));
+    axios
+      .get(`${API_BASE_URL}/customers-table`)
+      .then((res) => setCustomers(res.data))
+      .catch((err) => console.error(err));
   }, []);
 
   useEffect(() => {
-    onSelectCustomers(selected);  // whenever selection changes, update parent
+    onSelectCustomers(Array.from(selected)); // send selected ids to parent
   }, [selected]);
 
   // Filtering
-  const filteredCustomers = customers.filter(c =>
-    c.user.toLowerCase().includes(filter.toLowerCase()) ||
-    c.phone.includes(filter)
+  const filteredCustomers = customers.filter(
+    (c) =>
+      c.user.toLowerCase().includes(filter.toLowerCase()) ||
+      c.phone.includes(filter)
   );
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredCustomers.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentCustomers = filteredCustomers.slice(startIndex, startIndex + rowsPerPage);
+  const currentCustomers = filteredCustomers.slice(
+    startIndex,
+    startIndex + rowsPerPage
+  );
 
   // Selection logic
   const toggleSelect = (id) => {
-    setSelected(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+    setSelected((prev) => {
+      const copy = new Set(prev);
+      copy.has(id) ? copy.delete(id) : copy.add(id);
+      return copy;
+    });
   };
 
   const selectAll = () => {
-    const allIds = filteredCustomers.map(c => c.id);
-    setSelected(allIds);
+    setSelected(new Set(filteredCustomers.map((c) => c.id)));
   };
 
-  const unselectAll = () => {
-    setSelected([]);
-  };
+  const unselectAll = () => setSelected(new Set());
 
   const goToPrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -59,7 +63,9 @@ const CustomerList = ({ onSelectCustomers }) => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Customers List (all customers)</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+        Customers List (all customers)
+      </h2>
 
       {/* Search Bar */}
       <input
@@ -70,7 +76,7 @@ const CustomerList = ({ onSelectCustomers }) => {
         className="mb-4 p-2 border rounded w-full shadow-sm focus:ring-2 focus:ring-blue-400"
       />
 
-      {/* Select / Unselect All Buttons */}
+      {/* Select / Unselect All */}
       <div className="mb-4 space-x-2">
         <button
           onClick={selectAll}
@@ -84,8 +90,8 @@ const CustomerList = ({ onSelectCustomers }) => {
         >
           Unselect All
         </button>
-        {selected.length > 0 && (
-          <span className="ml-4 text-gray-700">{selected.length} selected</span>
+        {selected.size > 0 && (
+          <span className="ml-4 text-gray-700">{selected.size} selected</span>
         )}
       </div>
 
@@ -100,15 +106,17 @@ const CustomerList = ({ onSelectCustomers }) => {
             </tr>
           </thead>
           <tbody>
-            {currentCustomers.map(c => (
+            {currentCustomers.map((c) => (
               <tr
                 key={c.id}
-                className={`hover:bg-gray-800 ${selected.includes(c.id) ? "bg-blue-50" : ""}`}
+                className={`hover:bg-gray-50 ${
+                  selected.has(c.id) ? "bg-blue-50" : ""
+                }`}
               >
                 <td className="p-2 border text-center">
                   <input
                     type="checkbox"
-                    checked={selected.includes(c.id)}
+                    checked={selected.has(c.id)}
                     onChange={() => toggleSelect(c.id)}
                   />
                 </td>
@@ -147,11 +155,16 @@ const CustomerList = ({ onSelectCustomers }) => {
           Next
         </button>
       </div>
+
+      {/* Classifications */}
       <div className="mt-12">
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">
           Customer Classifications
         </h2>
-        <MessagingCustomerClassificationTables />
+        <MessagingCustomerClassificationTables
+          selected={selected}
+          setSelected={setSelected}
+        />
       </div>
     </div>
   );
