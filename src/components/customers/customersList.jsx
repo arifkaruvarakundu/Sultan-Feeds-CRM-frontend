@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import API_BASE_URL from "../../../api_config";
+import MessagingCustomerClassificationTables from "../customers/Messaging_customer_classsification";
 
 const CustomerList = ({ onSelectCustomers }) => {
   const [customers, setCustomers] = useState([]);
@@ -58,7 +59,7 @@ const CustomerList = ({ onSelectCustomers }) => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Customers List</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Customers List (all customers)</h2>
 
       {/* Search Bar */}
       <input
@@ -145,6 +146,12 @@ const CustomerList = ({ onSelectCustomers }) => {
         >
           Next
         </button>
+      </div>
+      <div className="mt-12">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+          Customer Classifications
+        </h2>
+        <MessagingCustomerClassificationTables />
       </div>
     </div>
   );

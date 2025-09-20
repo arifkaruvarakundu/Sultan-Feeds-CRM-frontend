@@ -1,0 +1,214 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+import API_BASE_URL from "../../../api_config";
+
+const MessagingClassificationTable = ({ title, criteria, customers }) => {
+  const [filter, setFilter] = useState("");
+  const [selected, setSelected] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+
+  // Filtering
+  const filtered = customers.filter(
+    (c) =>
+      c.customer_name.toLowerCase().includes(filter.toLowerCase()) ||
+      (c.phone && c.phone.includes(filter))
+  );
+
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const current = filtered.slice(startIndex, startIndex + rowsPerPage);
+
+  // Selection
+  const toggleSelect = (id) => {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const selectAll = () => {
+    const allIds = filtered.map((c) => c.customer_id);
+    setSelected(allIds);
+  };
+
+  const unselectAll = () => setSelected([]);
+
+  return (
+    <div className="mt-12">
+      {/* Heading */}
+      <div className="bg-gradient-to-r from-indigo-100 to-indigo-200 border border-indigo-300 rounded-xl px-4 py-3 mb-4 shadow-sm text-center">
+        <h3 className="text-xl font-semibold text-indigo-800 tracking-wide">
+          {title}{" "}
+          <span className="text-sm text-indigo-600">({customers.length})</span>
+        </h3>
+        <p className="text-sm text-indigo-700 mt-1 italic">{criteria}</p>
+      </div>
+
+      {/* Search Bar */}
+      <input
+        type="text"
+        placeholder="Search by name or phone..."
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        className="mb-4 p-2 border rounded w-full shadow-sm focus:ring-2 focus:ring-blue-400"
+      />
+
+      {/* Select / Unselect */}
+      <div className="mb-4 space-x-2">
+        <button
+          onClick={selectAll}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Select All
+        </button>
+        <button
+          onClick={unselectAll}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          Unselect All
+        </button>
+        {selected.length > 0 && (
+          <span className="ml-4 text-gray-700">{selected.length} selected</span>
+        )}
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto rounded-lg shadow">
+        <table className="w-full border-collapse">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th className="p-2 border"></th>
+              <th className="p-2 border text-left">Name</th>
+              <th className="p-2 border text-left">Phone</th>
+              <th className="p-2 border text-left">Orders</th>
+              <th className="p-2 border text-left">Churn Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            {current.map((c) => (
+              <tr
+                key={c.customer_id}
+                className={`hover:bg-gray-50 ${
+                  selected.includes(c.customer_id) ? "bg-blue-50" : ""
+                }`}
+              >
+                <td className="p-2 border text-center">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(c.customer_id)}
+                    onChange={() => toggleSelect(c.customer_id)}
+                  />
+                </td>
+                <td className="p-2 border">{c.customer_name}</td>
+                <td className="p-2 border">{c.phone}</td>
+                <td className="p-2 border">{c.order_count}</td>
+                <td className="p-2 border">{c.churn_risk}</td>
+              </tr>
+            ))}
+            {current.length === 0 && (
+              <tr>
+                <td colSpan="5" className="p-4 text-center text-gray-500">
+                  No customers found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-between items-center mt-4 text-gray-700">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
+        >
+          Previous
+        </button>
+        <span className="text-sm">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 hover:bg-gray-300"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const MessagingCustomerClassificationTables = () => {
+  const [grouped, setGrouped] = useState({});
+
+  useEffect(() => {
+    axios
+      .get(`${API_BASE_URL}/full-customer-classification`)
+      .then((res) => {
+        const data = res.data;
+        const byGroup = data.reduce((acc, c) => {
+          const key = c.classification || "Unclassified";
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(c);
+          return acc;
+        }, {});
+        setGrouped(byGroup);
+      })
+      .catch((err) =>
+        console.error("Failed to fetch classified customers:", err)
+      );
+  }, []);
+
+  const classificationOrder = [
+    {
+      key: "Loyal",
+      title: "Loyal Customers",
+      criteria: "High order frequency, low churn risk",
+    },
+    {
+      key: "Frequent",
+      title: "Frequent Customers",
+      criteria: "Regular buyers with moderate activity",
+    },
+    {
+      key: "Occasional",
+      title: "Occasional Customers",
+      criteria: "Buy sometimes, not consistent",
+    },
+    {
+      key: "New",
+      title: "New Customers",
+      criteria: "Recently joined, early stage",
+    },
+    {
+      key: "Dead",
+      title: "Dead Customers",
+      criteria: "No recent orders, high churn risk",
+    },
+    {
+      key: "No Orders",
+      title: "No Orders Customers",
+      criteria: "Signed up but never ordered",
+    },
+  ];
+
+  return (
+    <div>
+      {classificationOrder.map(({ key, title, criteria }) =>
+        grouped[key]?.length > 0 ? (
+          <MessagingClassificationTable
+            key={key}
+            title={title}
+            criteria={criteria}
+            customers={grouped[key]}
+          />
+        ) : null
+      )}
+    </div>
+  );
+};
+
+export default MessagingCustomerClassificationTables;
